@@ -9,24 +9,27 @@ from compressor import compressor11025
 ## in the variable named 'directory'
 ## Make sure the directory you choose is inside this project
 
-directory = r'/Users/kmontocam/Documents/GitHub/tracks'
+if __name__ == '__main__':
 
-MUSIC_FOLDER = os.listdir(directory)
-tracks = [file for file in MUSIC_FOLDER if (file[-4:] == '.wav')]
+    directory = r'/Users/kmontocam/Documents/GitHub/tracks'
 
-fingerprints = pd.DataFrame()
+    MUSIC_FOLDER = os.listdir(directory)
+    tracks = [file for file in MUSIC_FOLDER if (file[-4:] == '.wav')]
 
-for track in tracks:
+    IMPACT = 2 # Coefficient used to consider relevance of fingerprints
+    fingerprints = pd.DataFrame()
 
-    song_freq, song = wavfile.read(os.path.join(directory, track))
+    for track in tracks:
 
-    compressed_freq, song_compressed = compressor11025(song_freq, song)
+        song_freq, song = wavfile.read(os.path.join(directory, track))
 
-    freq_times, freq_highs = fingerprinter(compressed_freq, song_compressed)
+        compressed_freq, song_compressed = compressor11025(song_freq, song)
 
-    data = pd.DataFrame(list(zip(freq_times, freq_highs)),
-    columns = pd.MultiIndex.from_tuples([(track[:-4], 'time'), (track[:-4], 'hz')]))
-    
-    fingerprints = pd.concat([fingerprints, data], axis = 1)
+        freq_times, freq_highs = fingerprinter(compressed_freq, song_compressed, impact = IMPACT)
 
-fingerprints.to_csv('fingerprints.csv', index = False)
+        data = pd.DataFrame(list(zip(freq_times, freq_highs)),
+        columns = pd.MultiIndex.from_tuples([(track[:-4], 'time'), (track[:-4], 'hz')]))
+        
+        fingerprints = pd.concat([fingerprints, data], axis = 1)
+
+    fingerprints.to_csv('fingerprints.csv', index = False)

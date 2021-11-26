@@ -7,16 +7,17 @@ from compressor import compressor11025
 
 ## Type your file directory full of .wav songs
 ## in the variable named 'directory'
-## Make sure the directory you choose is inside this project
+## Make sure the directory you choose is inside this project !
+
+## A list of tracks was already preloaded. So you can start
+## playing with sound even if you do not run this file!
 
 if __name__ == '__main__':
 
-    directory = r'/Users/kmontocam/Documents/GitHub/tracks'
+    directory = r'/Users/you/Music/tracks'
 
     MUSIC_FOLDER = os.listdir(directory)
     tracks = [file for file in MUSIC_FOLDER if (file[-4:] == '.wav')]
-
-    IMPACT = 2 # Coefficient used to consider relevance of fingerprints
     fingerprints = pd.DataFrame()
 
     for track in tracks:
@@ -25,7 +26,7 @@ if __name__ == '__main__':
 
         compressed_freq, song_compressed = compressor11025(song_freq, song)
 
-        freq_times, freq_highs = fingerprinter(compressed_freq, song_compressed, impact = IMPACT)
+        freq_times, freq_highs = fingerprinter(compressed_freq, song_compressed)
 
         data = pd.DataFrame(list(zip(freq_times, freq_highs)),
         columns = pd.MultiIndex.from_tuples([(track[:-4], 'time'), (track[:-4], 'hz')]))
